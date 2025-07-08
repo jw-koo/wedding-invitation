@@ -10,7 +10,7 @@
 
 이 프로젝트가 도움이 되었다면, 개발자에게 커피 한 잔으로 응원해주세요! 여러분의 후원이 더 나은 오픈 소스 프로젝트를 만드는 데 큰 도움이 됩니다.
 
-[☕ 개발자에게 커피 사주기](https://www.paypal.com/donate?business=support%40dev-repository.com&currency_code=USD&item_name=JW+K+-+Unsplash)
+[☕ 개발자에게 커피 사주기](https://qr.kakaopay.com/Ej8soKM2U)
 
 ## 기능
 
