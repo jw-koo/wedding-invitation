@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { weddingConfig } from '../../config/wedding-config';
@@ -8,18 +8,53 @@ import { weddingConfig } from '../../config/wedding-config';
 const watermarkId = weddingConfig.meta._jwk_watermark_id || 'JWK-NonCommercial';
 
 const MainSection = () => {
+  // Variables for image scaling and translation according to scroll position
+  const [imageScale, setImageScale] = useState(1);
+  const [imageTranslateY, setImageTranslateY] = useState(0);
+  const parralaxenabled = weddingConfig.main.effects.parallax.enabled;
+
+  useEffect(() => {
+    const handleScroll = () => {        
+        // ZoomIn effect when scrolling down 
+        if (weddingConfig.main.effects.zoomIn.enabled) {
+            const scaleValue = 1 + window.scrollY * weddingConfig.main.effects.zoomIn.scaleCoef;
+            setImageScale(scaleValue);
+        }
+
+        // Parralax effect when scrolling down 
+        if (weddingConfig.main.effects.parallax.enabled) {
+            const translateYValue = scrollY * -weddingConfig.main.effects.parallax.scaleCoef; 
+            setImageTranslateY(translateYValue);
+            console.log(`Parallax translateY: ${translateYValue}`);
+        } 
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+
   return (
-    <MainSectionContainer className={`wedding-container jwk-${watermarkId.slice(0, 8)}-main`}>
+    <MainSectionContainer className={`wedding-container jwk-${watermarkId.slice(0, 8)}-main`} $parralaxenabled={parralaxenabled}>
       {}
-      <BackgroundImage 
-        src={weddingConfig.main.image}
-        alt="웨딩 배경 이미지"
-        fill
-        priority
-        sizes="100vw"
-        quality={90}
-        style={{ objectFit: 'cover', objectPosition: 'center 10%' }}
-      />
+      <ImageWrapper>
+        <BackgroundImage
+          src={weddingConfig.main.image}
+          alt="웨딩 배경 이미지"
+          fill
+          priority
+          sizes="100vw"
+          quality={90}
+          $scale={imageScale} // zoomIn effect scale value 
+          $translateY={imageTranslateY} // parallax effect translateY value
+          style={{ objectFit: 'cover', objectPosition: 'center 10%' }}
+        />
+      </ImageWrapper>
+
       <Overlay />
       <MainContent>
         <MainTitle>{weddingConfig.main.title}</MainTitle>
@@ -38,7 +73,12 @@ const MainSection = () => {
   );
 };
 
-const MainSectionContainer = styled.section`
+// Interface for MainSectionContainer to accept custom props 
+// set background transparent when parallax effect is applied
+interface MainSectionProps {
+  $parralaxenabled?: boolean;
+}
+const MainSectionContainer = styled.section<MainSectionProps>`
   position: relative;
   height: 100vh;
   min-height: 100vh;
@@ -51,7 +91,12 @@ const MainSectionContainer = styled.section`
   text-align: center;
   color: white;
   overflow: hidden;
-  background: #f8f6f2;
+  background-color: ${(props) =>
+    props.$parralaxenabled 
+      ? 'transparent'
+      : '#f8f6f2'
+    };
+
 
   @media (min-width: 768px) and (min-height: 780px) {
     aspect-ratio: 9 / 16;
@@ -63,8 +108,20 @@ const MainSectionContainer = styled.section`
   }
 `;
 
-const BackgroundImage = styled(Image)`
+const ImageWrapper = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+`;
+
+const BackgroundImage = styled(Image)<{ $scale: number, $translateY: number }>`
   z-index: 0;
+  transform: scale(${props => props.$scale}) translateY(${props => props.$translateY}px);
+  transform-origin: center center;
+  transition: transform 0.3s ease-out; // for smooth effects 
 `;
 
 const Overlay = styled.div`

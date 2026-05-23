@@ -25,7 +25,17 @@ export const weddingConfig = {
     title: "Wedding Invitation",
     image: "/images/ha0h-1fsi-bqt3.jpg",
     date: "2026년 5월 16일 토요일 12시 30분",
-    venue: "웨딩홀 이름"
+    venue: "웨딩홀 이름",
+    effects: {
+    "zoomIn" : {
+      "enabled" : false,
+      "scaleCoef": 0.0005
+    }, 
+    "parallax" : {
+      "enabled" : false,
+      "scaleCoef": 0.3
+    }, 
+    }
   },
 
   // 소개글
